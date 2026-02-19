@@ -38,7 +38,3 @@ def get_input():
         return word
     raise ValueError("Too many invalid attempts.")
         
-def check(word):
-    
-    grey, green, yellow = [], [], []
-    
