@@ -1,6 +1,6 @@
 
 
-def get_files():
+def get_words():
     
     with open("words.txt", 'r') as w:
         
@@ -38,3 +38,37 @@ def get_input():
         return word
     raise ValueError("Too many invalid attempts.")
         
+def get_yellows_greens():
+    
+    words = get_words()
+    choice = get_input()
+    green, yellow, grey = [], [], []
+    
+    yellows_count = int(input("How many yellow characters did you get? Enter 0 if none: "))
+    greens_count = int(input("How many green characters did you get? Enter 0 if none: "))
+    greys_count = int(input("How many grey characters did you get? Enter 0 if none: "))
+    
+    yellows = get_feedback_letters("yellow", yellows_count, choice)
+    greens = get_feedback_letters("green", greens_count, choice)
+    greys = get_feedback_letters("grey", greys_count, choice)
+    
+    green.append(greens)
+    yellow.append(yellows)
+    grey.append(greys)
+    
+    check_letters(green, grey, yellow)
+    
+def get_feedback_letters(color_name: str, count: int, choice: str):
+    letters = []
+    for _ in range(count):
+        while True:
+            letter = input(f"What letter was {color_name}?: ").strip().lower()
+            if letter in choice:
+                letters.append(letter)
+                break
+            print(f"{letter} is not in {choice}. Try again.")
+            
+    return letters
+
+def check_letters(green, grey, yellow):
+    pass
