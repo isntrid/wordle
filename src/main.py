@@ -5,7 +5,7 @@ def get_files():
     with open("words.txt", 'r') as w:
         lines = w.readlines()
         for word in lines:
-            words.add(word)
+            words.add(word.strip())
     return words
 
 print(get_files())
