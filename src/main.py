@@ -1,11 +1,14 @@
 
 
 def get_files():
-    words = set()
     with open("words.txt", 'r') as w:
+        
         lines = w.readlines()
-        for word in lines:
-            words.add(word.strip())
+        words = [
+            word for w in lines 
+            if (word := w.strip().lower()).isalpha() 
+            and word.isascii() and len(word) == 5
+            ]
+        
     return words
 
-print(get_files())
