@@ -82,8 +82,8 @@ def get_colours(overall_green=None, overall_yellow=None, overall_grey=None):
     greens_count = int(input("How many green characters did you get? Enter 0 if none: "))
     greys_count = 5 - yellows_count - greens_count
     
-    greens = get_feedback_letters("green", yellows_count, choice)
-    yellows = get_feedback_letters("yellow", greens_count, choice)
+    greens = get_feedback_letters("greens", greens_count, choice)
+    yellows = get_feedback_letters("yellow", yellows_count, choice)
     greys = get_feedback_letters("grey", greys_count, choice)
 
     if overall_green is not None:
