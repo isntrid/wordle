@@ -1,5 +1,3 @@
-
-
 def get_words():
     
     with open("words.txt", 'r') as w:
@@ -39,8 +37,7 @@ def get_input():
     raise ValueError("Too many invalid attempts.")
         
 def get_yellows_greens():
-    
-    words = get_words()
+
     choice = get_input()
     green, yellow, grey = [], [], []
     
@@ -52,13 +49,14 @@ def get_yellows_greens():
     greens = get_feedback_letters("green", greens_count, choice)
     greys = get_feedback_letters("grey", greys_count, choice)
     
-    green.append(greens)
-    yellow.append(yellows)
-    grey.append(greys)
+    green = greens
+    yellow = yellows
+    grey = greys
     
-    check_letters(green, grey, yellow)
+    check_letters(green, grey, yellow, choice)
     
 def get_feedback_letters(color_name: str, count: int, choice: str):
+    
     letters = []
     for _ in range(count):
         while True:
@@ -70,5 +68,85 @@ def get_feedback_letters(color_name: str, count: int, choice: str):
             
     return letters
 
-def check_letters(green, grey, yellow):
-    pass
+def check_letters(green, grey, yellow, choice):
+
+    green_letters = {}
+    yellow_letters = {}
+    grey_letters = set()
+    
+    for pos, char in enumerate(choice): 
+        if char in green:
+            green_letters[pos] = char  
+
+        if char in yellow:
+            yellow_letters.setdefault(char, []).append(pos) 
+
+        if char in grey:
+            grey_letters.add(char)
+            
+    find_words(green_letters, yellow_letters, grey_letters)
+            
+def find_words(green, yellow, grey):
+    words = get_words()
+    valid = []
+
+    for word in words:
+
+        if any(letter in word for letter in grey):
+            continue
+
+        if any(word[pos] != letter for pos, letter in green.items()):
+            continue
+
+        bad_yellow = False
+        for letter, positions in yellow.items():
+
+            if letter not in word:
+                bad_yellow = True
+                break
+
+            if any(word[pos] == letter for pos in positions):
+                bad_yellow = True
+                break
+
+        if bad_yellow:
+            continue
+
+        valid.append(word)
+
+    print_valid(valid)
+
+def print_valid(valid_words):
+    
+    for w in valid_words:
+        print(w)
+    continue_program()
+
+def continue_program():
+    
+    MAX_ATTEMPTS = 5
+    for _ in range(MAX_ATTEMPTS):
+        word = input("Are you finished? ").strip().lower()
+
+        if not word:
+            print("Empty input. Try again.")
+            continue
+
+        if not word.isascii():
+            print("Only standard English letters allowed.")
+            continue
+
+        if not word.isalpha():
+            print("No numbers or punctuation.")
+            continue
+        
+        if word == "y" or word == "yes":
+            exit(1)
+        else:
+            get_yellows_greens()
+    raise ValueError("Too many invalid attempts.")
+
+def main():
+    get_yellows_greens()
+    
+main()
