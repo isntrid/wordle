@@ -1,17 +1,38 @@
 def get_words():
+    '''
+    This function looks at words.txt, a text file containing hundreds of thousands of words
+    and then puts any 5 letter, english words that have no numbers into a list and returns it.
     
-    with open("words.txt", 'r') as w:
-        
-        lines = w.readlines()
-        words = [
-            word for w in lines 
-            if (word := w.strip().lower()).isalpha() 
-            and word.isascii() and len(word) == 5
-            ]
-        
+    
+    Returns:
+        words List[str]: contains a list of every valid word.
+    
+    Raisse:
+        FileNotFoundError: no valid word or dictionary of words list was found.
+    '''
+    
+    try:
+        with open("words.txt", 'r') as w:
+            lines = w.readlines()
+            words = [
+                word for w in lines 
+                if (word := w.strip().lower()).isalpha() 
+                and word.isascii() and len(word) == 5
+                ]
+    except FileNotFoundError as e:
+        raise FileNotFoundError("No word / dictionary file was found.") from e
     return words
 
 def get_input():
+    '''
+    This function asks the user to input the word they chose.
+    
+    Returns:
+        word [str]: holds the word that the user inputted.
+        
+    Raises:
+        ValueError: User failed to input a valid word in the given 5 attempts.
+    '''
     
     MAX_ATTEMPTS = 5
     for _ in range(MAX_ATTEMPTS):
@@ -36,7 +57,11 @@ def get_input():
         return word
     raise ValueError("Too many invalid attempts.")
         
-def get_yellows_greens():
+def get_colours():
+    '''
+    This function asks the user to input how many of each letter type they got, then asks 
+    (using another function) which letter(s) were what colour.
+    '''
 
     choice = get_input()
     green, yellow, grey = [], [], []
@@ -53,9 +78,21 @@ def get_yellows_greens():
     yellow = yellows
     grey = greys
     
-    check_letters(green, grey, yellow, choice)
+    compile_colours(green, grey, yellow, choice)
     
 def get_feedback_letters(color_name: str, count: int, choice: str):
+    '''
+    This function is used in get_colours() to find out what letters of the user's word were
+    what colours.
+    
+    Args:
+        colour_name [str]: the colour name (green, yellow or grey).
+        count [int]: the amount of the given colour, which is then used for the loop count.
+        choice [str]: the user's chosen word. 
+    
+    Returns:
+        letters List[char]: a list of the given colour type. 
+    '''
     
     letters = []
     for _ in range(count):
@@ -68,7 +105,16 @@ def get_feedback_letters(color_name: str, count: int, choice: str):
             
     return letters
 
-def check_letters(green, grey, yellow, choice):
+def compile_colours(green, grey, yellow, choice):
+    '''
+    This function compiles a list (not a literal list) of the 3 colour types, which will be 
+    used later as criteria for fidning valid words.
+    
+    Args:
+        green List[str]: a list of the green letters
+        grey List[str]: a list of the grey letters
+        yellow List[str]: a list of the yellow letters
+    '''
 
     green_letters = {}
     yellow_letters = {}
@@ -87,6 +133,15 @@ def check_letters(green, grey, yellow, choice):
     find_words(green_letters, yellow_letters, grey_letters)
             
 def find_words(green, yellow, grey):
+    '''
+    This function finds all words that could possibly be the answer to the Wordle. 
+    
+    Args:
+        green List[str]: a list of the green letters
+        grey List[str]: a list of the grey letters
+        yellow List[str]: a list of the yellow letters
+    '''
+    
     words = get_words()
     valid = []
 
@@ -117,12 +172,27 @@ def find_words(green, yellow, grey):
     print_valid(valid)
 
 def print_valid(valid_words):
+    '''
+    This function prints out every valid word.
     
+    Args:
+        valid_words List[str]: a list of every possible answer.
+    '''
+
+    print("Possible words:")
     for w in valid_words:
         print(w)
     continue_program()
 
 def continue_program():
+    '''
+    This function acts as the looping logic. It allosw the user to continue passing words in,
+    such that they can narrow down the answer. 
+    
+    Raises:
+        ValueError: User failed to input a valid word in the given 5 attempts.
+    
+    '''
     
     MAX_ATTEMPTS = 5
     for _ in range(MAX_ATTEMPTS):
@@ -139,15 +209,15 @@ def continue_program():
         if not word.isalpha():
             print("No numbers or punctuation.")
             continue
-        
-        if word == "y" or word == "yes":
+
+        if word in ["y", "yes"]:
             exit(1)
         else:
-            get_yellows_greens()
+            get_colours()
     raise ValueError("Too many invalid attempts.")
 
 def main():
     
-    get_yellows_greens()
+    get_colours()
     
 main()
