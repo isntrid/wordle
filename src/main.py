@@ -3,11 +3,9 @@ def get_words():
     This function looks at words.txt, a text file containing hundreds of thousands of words
     and then puts any 5 letter, english words that have no numbers into a list and returns it.
     
-    
     Returns:
         words List[str]: contains a list of every valid word.
-    
-    Raisse:
+    Raises:
         FileNotFoundError: no valid word or dictionary of words list was found.
     '''
     
@@ -26,13 +24,12 @@ def get_words():
 def get_input():
     '''
     This function asks the user to input the word they chose.
-    
+
     Returns:
         word [str]: holds the word that the user inputted.
-        
     Raises:
         ValueError: User failed to input a valid word in the given 5 attempts.
-    '''
+    ''' 
     
     MAX_ATTEMPTS = 5
     for _ in range(MAX_ATTEMPTS):
@@ -57,28 +54,44 @@ def get_input():
         return word
     raise ValueError("Too many invalid attempts.")
         
-def get_colours():
-    '''
-    This function asks the user to input how many of each letter type they got, then asks 
-    (using another function) which letter(s) were what colour.
+def get_colours(overall_green=None, overall_yellow=None, overall_grey=None):
     '''
 
+    This function is used in get_colours() to find out what letters of the user's word were
+    what colours.
+    
+    Args:
+        colour_name [str]: the colour name (green, yellow or grey).
+        count [int]: the amount of the given colour, which is then used for the loop count.
+        choice [str]: the user's chosen word.
+
+    Returns:
+        letters List[char]: a list of the given colour type.
+    '''
+    
+    if overall_green is None:
+        overall_green = []
+    if overall_yellow is None:
+        overall_yellow = []
+    if overall_grey is None:
+        overall_grey = []
+
     choice = get_input()
-    green, yellow, grey = [], [], []
     
     yellows_count = int(input("How many yellow characters did you get? Enter 0 if none: "))
     greens_count = int(input("How many green characters did you get? Enter 0 if none: "))
-    greys_count = int(input("How many grey characters did you get? Enter 0 if none: "))
+    greys_count = 5 - yellows_count - greens_count
     
-    yellows = get_feedback_letters("yellow", yellows_count, choice)
     greens = get_feedback_letters("green", greens_count, choice)
+    yellows = get_feedback_letters("yellow", yellows_count, choice)
     greys = get_feedback_letters("grey", greys_count, choice)
     
-    green = greens
-    yellow = yellows
-    grey = greys
+    if overall_green is not None:
+        overall_green.extend(greens)
+        overall_yellow.extend(yellows)
+        overall_grey.extend(greys)
     
-    compile_colours(green, grey, yellow, choice)
+    return overall_green, overall_yellow, overall_grey, choice
     
 def get_feedback_letters(color_name: str, count: int, choice: str):
     '''
@@ -118,7 +131,7 @@ def compile_colours(green, grey, yellow, choice):
 
     green_letters = {}
     yellow_letters = {}
-    grey_letters = set()
+    grey_letters = []
     
     for pos, char in enumerate(choice): 
         if char in green:
@@ -127,12 +140,12 @@ def compile_colours(green, grey, yellow, choice):
         if char in yellow:
             yellow_letters.setdefault(char, []).append(pos) 
 
-        if char in grey:
-            grey_letters.add(char)
+        if char in grey and char not in green and char not in yellow:
+            grey_letters.append(char)
             
-    find_words(green_letters, yellow_letters, grey_letters)
+    return green_letters, yellow_letters, grey_letters
             
-def find_words(green, yellow, grey):
+def find_words(green, yellow, grey, valid_words_list):
     '''
     This function finds all words that could possibly be the answer to the Wordle. 
     
@@ -142,10 +155,10 @@ def find_words(green, yellow, grey):
         yellow List[str]: a list of the yellow letters
     '''
     
-    words = get_words()
     valid = []
 
-    for word in words:
+    # CHANGED: Loop over the list passed into the function
+    for word in valid_words_list:
 
         if any(letter in word for letter in grey):
             continue
@@ -169,24 +182,16 @@ def find_words(green, yellow, grey):
 
         valid.append(word)
 
-    print_valid(valid)
+    return valid
 
 def print_valid(valid_words):
-    '''
-    This function prints out every valid word.
-    
-    Args:
-        valid_words List[str]: a list of every possible answer.
-    '''
-
     print("Possible words:")
     for w in valid_words:
         print(w)
-    continue_program()
 
-def continue_program():
+def continue_program(overall_green, overall_yellow, overall_grey, valid_words):
     '''
-    This function acts as the looping logic. It allosw the user to continue passing words in,
+    This function acts as the looping logic. It allows the user to continue passing words in,
     such that they can narrow down the answer. 
     
     Raises:
@@ -213,11 +218,31 @@ def continue_program():
         if word in ["y", "yes"]:
             exit(1)
         else:
-            get_colours()
+            # CHANGED: Reset these lists so your `.extend()` logic in get_colours 
+            # doesn't force previous green letters into wrong positions on new guesses.
+            overall_green, overall_yellow, overall_grey = [], [], []
+            
+            overall_green, overall_yellow, overall_grey, choice = get_colours(overall_green, overall_yellow, overall_grey)
+            green_letters, yellow_letters, grey_letters = compile_colours(overall_green, overall_grey, overall_yellow, choice)
+            
+            # CHANGED: Passed valid_words through so it continues to shrink
+            valid_words = find_words(green_letters, yellow_letters, grey_letters, valid_words)
+            print_valid(valid_words)
     raise ValueError("Too many invalid attempts.")
 
 def main():
+    overall_green = []
+    overall_yellow = []
+    overall_grey = []
     
-    get_colours()
+    valid_words = get_words()
+    
+    overall_green, overall_yellow, overall_grey, choice = get_colours(overall_green, overall_yellow, overall_grey)
+    green_letters, yellow_letters, grey_letters = compile_colours(overall_green, overall_grey, overall_yellow, choice)
+    
+    valid_words = find_words(green_letters, yellow_letters, grey_letters, valid_words)
+    print_valid(valid_words)
+    
+    continue_program(overall_green, overall_yellow, overall_grey, valid_words)
     
 main()
