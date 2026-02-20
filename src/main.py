@@ -82,10 +82,10 @@ def get_colours(overall_green=None, overall_yellow=None, overall_grey=None):
     greens_count = int(input("How many green characters did you get? Enter 0 if none: "))
     greys_count = 5 - yellows_count - greens_count
     
-    greens = get_feedback_letters("green", greens_count, choice)
-    yellows = get_feedback_letters("yellow", yellows_count, choice)
+    greens = get_feedback_letters("green", yellows_count, choice)
+    yellows = get_feedback_letters("yellow", greens_count, choice)
     greys = get_feedback_letters("grey", greys_count, choice)
-    
+
     if overall_green is not None:
         overall_green.extend(greens)
         overall_yellow.extend(yellows)
@@ -93,7 +93,7 @@ def get_colours(overall_green=None, overall_yellow=None, overall_grey=None):
     
     return overall_green, overall_yellow, overall_grey, choice
     
-def get_feedback_letters(color_name: str, count: int, choice: str):
+def get_feedback_letters(colour_name: str, count, choice: str):
     '''
     This function is used in get_colours() to find out what letters of the user's word were
     what colours.
@@ -106,16 +106,16 @@ def get_feedback_letters(color_name: str, count: int, choice: str):
     Returns:
         letters List[char]: a list of the given colour type. 
     '''
-    
     letters = []
-    for _ in range(count):
+    if count != 0:
         while True:
-            letter = input(f"What letter was {color_name}?: ").strip().lower()
-            if letter in choice:
-                letters.append(letter)
-                break
-            print(f"{letter} is not in {choice}. Try again.")
-            
+                letters = list(input(f"What letters were {colour_name}?: ").strip().lower())
+                if any(char not in choice for char in letters):
+                    print(f"A letter was not found in {choice}. Try again.")
+                elif len(letters) != count:
+                    print(f"{count} letters expected; {len(letters)} entered. Try again.")
+                else:
+                    break
     return letters
 
 def compile_colours(green, grey, yellow, choice):
@@ -157,7 +157,6 @@ def find_words(green, yellow, grey, valid_words_list):
     
     valid = []
 
-    # CHANGED: Loop over the list passed into the function
     for word in valid_words_list:
 
         if any(letter in word for letter in grey):
