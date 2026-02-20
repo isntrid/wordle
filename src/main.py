@@ -185,7 +185,7 @@ def find_words(green, yellow, grey, valid_words_list):
     return valid
 
 def print_valid(valid_words):
-    print("Possible words:")
+    print(f"{len(valid_words)} possible words:")
     for w in valid_words:
         print(w)
 
