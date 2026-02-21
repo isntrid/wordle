@@ -1,12 +1,15 @@
-def get_words():
+from typing import List
+def get_words() -> List[str]:
     '''
     This function looks at words.txt, a text file containing hundreds of thousands of words
     and then puts any 5 letter, english words that have no numbers into a list and returns it.
     
     Returns:
         words List[str]: contains a list of every valid word.
+        
     Raises:
-        FileNotFoundError: no valid word or dictionary of words list was found.
+        FileNotFoundError: No valid word or dictionary of words list was found.
+        PermissionError: Program was denied permission to access and read dictionary file.
     '''
     
     try:
@@ -19,14 +22,17 @@ def get_words():
                 ]
     except FileNotFoundError as e:
         raise FileNotFoundError("No word / dictionary file was found.") from e
+    except PermissionError as e:
+        raise PermissionError("Access to dictionary file was denied.") from e
     return words
 
-def get_input():
+def get_input() -> str:
     '''
     This function asks the user to input the word they chose.
 
     Returns:
-        word [str]: holds the word that the user inputted.
+        word [str]: Holds the word that the user inputted.
+        
     Raises:
         ValueError: User failed to input a valid word in the given 5 attempts.
     ''' 
@@ -54,19 +60,19 @@ def get_input():
         return word
     raise ValueError("Too many invalid attempts.")
         
-def get_colours(overall_green=None, overall_yellow=None, overall_grey=None):
+def get_colours(overall_green: List[str] = None, overall_yellow: List[str] = None, overall_grey: List[str] = None) -> List[str]:
     '''
 
-    This function is used in get_colours() to find out what letters of the user's word were
-    what colours.
+    This function is used to both keep track of the overall information of the game, as well as
+    create and fill the overall colour lists.
     
     Args:
-        colour_name [str]: the colour name (green, yellow or grey).
-        count [int]: the amount of the given colour, which is then used for the loop count.
-        choice [str]: the user's chosen word.
+        overall_green List[str] (default: None): A list of all the green letters
+        overall_grey List[str] (default: None): A list of all the grey letters
+        overall_yellow List[str] (default: None): A list of all the yellow letters
 
     Returns:
-        letters List[char]: a list of the given colour type.
+        letters List[char]: A list of the given colour type.
     '''
     
     if overall_green is None:
@@ -93,17 +99,17 @@ def get_colours(overall_green=None, overall_yellow=None, overall_grey=None):
     
     return overall_green, overall_yellow, overall_grey, choice
     
-def get_feedback_letters(colour_name: str, choice: str):
+def get_feedback_letters(colour_name: str, choice: str) -> List[str]:
     '''
     This function is used in get_colours() to find out what letters of the user's word were
     what colours.
     
     Args:
-        colour_name [str]: the colour name (green, yellow or grey).
-        choice [str]: the user's chosen word. 
+        colour_name [str]: The colour name (green, yellow or grey).
+        choice [str]: The user's chosen word. 
     
     Returns:
-        letters List[char]: a list of the given colour type. 
+        letters List[char]: A list of the given colour type. 
     '''
     letters = []
     while True:
@@ -116,15 +122,21 @@ def get_feedback_letters(colour_name: str, choice: str):
                 break
     return list(letters)
 
-def compile_colours(green, grey, yellow, choice):
+def compile_colours(green: List[str], grey: List[str], yellow: List[str], choice: str) -> List[str]:
     '''
     This function compiles a list (not a literal list) of the 3 colour types, which will be 
     used later as criteria for fidning valid words.
     
     Args:
-        green List[str]: a list of the green letters
-        grey List[str]: a list of the grey letters
-        yellow List[str]: a list of the yellow letters
+        green List[str]: A list of the green letters
+        grey List[str]: A list of the grey letters
+        yellow List[str]: A list of the yellow letters
+        choice [str]: The user's inputted word
+    
+    Returns:
+        green_letters List[str]: A list of the green letters
+        grey_letters List[str]: A list of the grey letters
+        yellow_letters List[str]: A list of the yellow letters
     '''
 
     green_letters = {}
@@ -143,14 +155,14 @@ def compile_colours(green, grey, yellow, choice):
             
     return green_letters, yellow_letters, grey_letters
             
-def find_words(green, yellow, grey, valid_words_list):
+def find_words(green: List[str], yellow: List[str], grey: List[str], valid_words_list: List[str]) -> List[str]:
     '''
     This function finds all words that could possibly be the answer to the Wordle. 
     
     Args:
-        green List[str]: a list of the green letters
-        grey List[str]: a list of the grey letters
-        yellow List[str]: a list of the yellow letters
+        green List[str]: A list of the green letters
+        grey List[str]: A list of the grey letters
+        yellow List[str]: A list of the yellow letters
     '''
     
     valid = []
@@ -181,18 +193,22 @@ def find_words(green, yellow, grey, valid_words_list):
 
     return valid
 
-def print_valid(valid_words):
+def print_valid(valid_words: List[str]) -> None:
     for w in valid_words:
         print(w)
     print(f"{len(valid_words)} possible words:")
-def continue_program(overall_green, overall_yellow, overall_grey, valid_words):
+def continue_program(overall_green: List[str], overall_yellow: List[str], overall_grey: List[str], valid_words: List[str]) -> None:
     '''
     This function acts as the looping logic. It allows the user to continue passing words in,
     such that they can narrow down the answer. 
     
     Raises:
         ValueError: User failed to input a valid word in the given 5 attempts.
-    
+        
+    Args:
+        overall_green List[str]: a list of all the green letters
+        overall_grey List[str]: a list of all the grey letters
+        overall_yellow List[str]: a list of all the yellow letters
     '''
     
     MAX_ATTEMPTS = 5
@@ -214,15 +230,12 @@ def continue_program(overall_green, overall_yellow, overall_grey, valid_words):
         if word in ["y", "yes"]:
             exit(1)
         else:
-            # CHANGED: Reset these lists so your `.extend()` logic in get_colours 
-            # doesn't force previous green letters into wrong positions on new guesses.
             overall_green, overall_yellow, overall_grey = [], [], []
             
             overall_green, overall_yellow, overall_grey, choice = get_colours(overall_green, overall_yellow, overall_grey)
             green_letters, yellow_letters, grey_letters = compile_colours(overall_green, overall_grey, overall_yellow, choice)
-            
-            # CHANGED: Passed valid_words through so it continues to shrink
             valid_words = find_words(green_letters, yellow_letters, grey_letters, valid_words)
+            
             print_valid(valid_words)
     raise ValueError("Too many invalid attempts.")
 
@@ -241,4 +254,5 @@ def main():
     
     continue_program(overall_green, overall_yellow, overall_grey, valid_words)
     
-main()
+if __name__ == "__main__":
+    main()
