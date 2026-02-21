@@ -196,6 +196,7 @@ def print_valid(valid_words: List[str]) -> None:
     for w in valid_words:
         print(w)
     print(f"{len(valid_words)} possible words:")
+    
 def continue_program(overall_green: List[str], overall_yellow: List[str], overall_grey: List[str], valid_words: List[str]) -> None:
     '''
     This function acts as the looping logic. It allows the user to continue passing words in,
@@ -227,7 +228,7 @@ def continue_program(overall_green: List[str], overall_yellow: List[str], overal
             continue
 
         if word in ["y", "yes"]:
-            exit(1)
+            exit(0)
         else:
             overall_green, overall_yellow, overall_grey = [], [], []
             
