@@ -105,13 +105,13 @@ def get_feedback_letters(colour_name: str, choice: str):
     '''
     letters = []
     while True:
-                letters = input(f"What letters were {colour_name}? Enter none if no letters of that type were found: ").strip().lower()
-                if letters == "none":
-                    return []
-                elif any(char not in choice for char in list(letters)):
-                    print(f"A letter was not found in {choice}. Try again.")
-                else:
-                    break
+            letters = input(f"What letters were {colour_name}? Enter none if no letters of that type were found: ").strip().lower()
+            if letters == "none":
+                return []
+            elif any(char not in choice for char in list(letters)):
+                print(f"A letter was not found in {choice}. Try again.")
+            else:
+                break
     return list(letters)
 
 def compile_colours(green, grey, yellow, choice):
