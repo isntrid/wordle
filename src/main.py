@@ -179,10 +179,9 @@ def find_words(green, yellow, grey, valid_words_list):
     return valid
 
 def print_valid(valid_words):
-    print(f"{len(valid_words)} possible words:")
     for w in valid_words:
         print(w)
-
+    print(f"{len(valid_words)} possible words:")
 def continue_program(overall_green, overall_yellow, overall_grey, valid_words):
     '''
     This function acts as the looping logic. It allows the user to continue passing words in,
