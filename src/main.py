@@ -78,11 +78,14 @@ def get_colours(overall_green=None, overall_yellow=None, overall_grey=None):
 
     choice = get_input()
 
-    
     greens = get_feedback_letters("greens", choice)
     yellows = get_feedback_letters("yellow", choice)
-    greys = get_feedback_letters("grey", choice)
-
+    greys = list(choice)
+    
+    for el_a, el_b in zip(greens, yellows):
+        greys.remove(el_a)
+        greys.remove(el_b)
+        
     if overall_green is not None:
         overall_green.extend(greens)
         overall_yellow.extend(yellows)
