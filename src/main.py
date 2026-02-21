@@ -97,7 +97,6 @@ def get_feedback_letters(colour_name: str, choice: str):
     
     Args:
         colour_name [str]: the colour name (green, yellow or grey).
-        count [int]: the amount of the given colour, which is then used for the loop count.
         choice [str]: the user's chosen word. 
     
     Returns:
