@@ -92,10 +92,9 @@ def get_colours(overall_green: List[str] = None, overall_yellow: List[str] = Non
         if letter in greys:
             greys.remove(letter)
         
-    if overall_green is not None:
-        overall_green.extend(greens)
-        overall_yellow.extend(yellows)
-        overall_grey.extend(greys)
+    overall_green.extend(greens)
+    overall_yellow.extend(yellows)
+    overall_grey.extend(greys)
     
     return overall_green, overall_yellow, overall_grey, choice
     
