@@ -77,14 +77,11 @@ def get_colours(overall_green=None, overall_yellow=None, overall_grey=None):
         overall_grey = []
 
     choice = get_input()
+
     
-    yellows_count = int(input("How many yellow characters did you get? Enter 0 if none: "))
-    greens_count = int(input("How many green characters did you get? Enter 0 if none: "))
-    greys_count = 5 - yellows_count - greens_count
-    
-    greens = get_feedback_letters("greens", greens_count, choice)
-    yellows = get_feedback_letters("yellow", yellows_count, choice)
-    greys = get_feedback_letters("grey", greys_count, choice)
+    greens = get_feedback_letters("greens", choice)
+    yellows = get_feedback_letters("yellow", choice)
+    greys = get_feedback_letters("grey", choice)
 
     if overall_green is not None:
         overall_green.extend(greens)
@@ -93,7 +90,7 @@ def get_colours(overall_green=None, overall_yellow=None, overall_grey=None):
     
     return overall_green, overall_yellow, overall_grey, choice
     
-def get_feedback_letters(colour_name: str, count, choice: str):
+def get_feedback_letters(colour_name: str, choice: str):
     '''
     This function is used in get_colours() to find out what letters of the user's word were
     what colours.
@@ -107,16 +104,15 @@ def get_feedback_letters(colour_name: str, count, choice: str):
         letters List[char]: a list of the given colour type. 
     '''
     letters = []
-    if count != 0:
-        while True:
-                letters = list(input(f"What letters were {colour_name}?: ").strip().lower())
-                if any(char not in choice for char in letters):
+    while True:
+                letters = input(f"What letters were {colour_name}? Enter none if no letters of that type were found: ").strip().lower()
+                if letters == "none":
+                    return []
+                elif any(char not in choice for char in list(letters)):
                     print(f"A letter was not found in {choice}. Try again.")
-                elif len(letters) != count:
-                    print(f"{count} letters expected; {len(letters)} entered. Try again.")
                 else:
                     break
-    return letters
+    return list(letters)
 
 def compile_colours(green, grey, yellow, choice):
     '''
